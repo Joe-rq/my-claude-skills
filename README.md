@@ -11,6 +11,7 @@
 | **decision-card** | 结构化决策路径生成器，带评分和推荐选项 |
 | **primitive-ir-compiler** | IR 编译器相关 skill |
 | **source-tracing** | 信息溯源 skill |
+| **medical-triage** | 智能医疗导诊助手，模拟分诊护士问诊流程 |
 
 ## 使用方法
 
