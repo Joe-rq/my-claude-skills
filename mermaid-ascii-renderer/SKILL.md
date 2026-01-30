@@ -4,7 +4,7 @@ description: >-
   使用 beautiful-mermaid 项目将 Mermaid 图表渲染为 ASCII 艺术。提供解析、布局算法和渲染操作的完整实现指南，支持流程图、状态图、序列图、类图和 ER 图表。当用户请求涉及以下场景时使用：（1）beautiful-mermaid 的 ASCII 渲染系统实现；（2）在终端/控制台输出 Mermaid 图表；（3）理解 A* 路径查找、网格布局、边路由等算法；（4）添加新的图表类型支持；（5）调试 ASCII 渲染问题（节点重叠、边穿过、标签位置）；（6）修改渲染逻辑或布局策略。
 metadata:
   author: joe
-  version: 1.0.0
+  version: 1.1.0
   title: mermaid-ascii-renderer
   description_zh: >-
     使用 beautiful-mermaid 项目将 Mermaid 图表渲染为 ASCII
