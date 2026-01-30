@@ -1,5 +1,7 @@
 # Core Systems
 
+> **说明**: 本文档中的代码示例为**概念性伪代码和结构摘录**，旨在说明核心系统的工作原理。实际实现可能与本文档略有差异，具体细节请参考 beautiful-mermaid 源码。
+
 Use this file for low-level rendering internals: types, canvas, drawing primitives, grid layout, pathfinding, routing, and render options.
 
 ## Types
