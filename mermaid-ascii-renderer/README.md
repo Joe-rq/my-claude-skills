@@ -11,6 +11,9 @@ beautiful-mermaid ASCII 渲染系统技能。
   - `characters.md` - Unicode/ASCII 字符表
   - `troubleshooting.md` - 故障排查与性能优化
   - `resources.md` - 外部参考链接
+  - `usage.md` - 使用方式与 API 选项
+  - `examples.md` - 多图类型最小示例
+  - `theming.md` - SVG 主题系统
 
 ## 相关项目
 

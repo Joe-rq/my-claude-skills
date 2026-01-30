@@ -4,6 +4,14 @@
 
 Use this file when you need details about how each Mermaid diagram type is rendered to ASCII/Unicode.
 
+## Table of Contents
+
+- Flowchart / State Diagram
+- Sequence Diagram
+- Class Diagram
+- ER Diagram
+- 扩展指南：添加新图表类型
+
 ## Flowchart / State Diagram
 
 **Rendering strategy:** grid layout + A* routing.

@@ -4,6 +4,17 @@
 
 Use this file for low-level rendering internals: types, canvas, drawing primitives, grid layout, pathfinding, routing, and render options.
 
+## Table of Contents
+
+- Types
+- Canvas
+- Drawing Primitives
+- Grid Layout
+- Pathfinding (A*)
+- Edge Routing
+- Render Order (layering)
+- Render Options
+
 ## Types
 
 ```typescript

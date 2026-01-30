@@ -2,6 +2,13 @@
 
 Use this file for debugging, performance tuning, and best practices.
 
+## Table of Contents
+
+- 故障排查决策树
+- 性能优化指南
+- 最小复现模板
+- 最佳实践
+
 ## 故障排查决策树
 
 ### 症状：节点重叠
@@ -65,6 +72,23 @@ Use this file for debugging, performance tuning, and best practices.
     ├── 原因: 标签未对齐到边的中点
     ├── 定位: 检查 labelLine 计算是否正确
     └── 修复: 确保选择最宽的边段放置标签
+```
+
+### 症状：边框错位或对齐异常（含中文标签）
+
+```
+对齐异常 (CJK Width Issues)
+├── 原因 1: 终端/编辑器将中文字符按双宽渲染
+│   ├── 定位: 同一示例在不同终端显示不一致
+│   └── 修复: 使用等宽且支持 CJK 的字体（如 Sarasa Mono）
+│
+├── 原因 2: 字体并非严格等宽
+│   ├── 定位: ASCII/Unicode 边框出现错位或拉伸
+│   └── 修复: 切换为等宽字体，并关闭“可变宽度”显示
+│
+└── 原因 3: 终端编码不一致
+    ├── 定位: Unicode 边框显示为乱码
+    └── 修复: 改用 ASCII 模式 (useAscii: true) 或切换 UTF-8 终端
 ```
 
 ### 症状：渲染结果为空或报错
