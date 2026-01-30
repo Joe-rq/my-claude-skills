@@ -66,7 +66,7 @@ Claude 系统会自动检测并加载 `.claude/skills/` 目录下的技能，当
 
 本技能基于 [lukilabs/beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid) 项目创建。
 
-**beautiful-mermaid** 是一个将 Mermaid 图表转换为精美 ASCII/Unicode 渲染的开源项目。感谢该项目作者提供了优秀的实现，使我们能够深入理解其内部架构和算法。
+**beautiful-mermaid** 是一个将 Mermaid 图表转换为精美 ASCII/Unicode 渲染的开源项目，采用 [MIT 协议](https://github.com/lukilabs/beautiful-mermaid/blob/main/LICENSE) 开源。感谢该项目作者提供了优秀的实现，使我们能够深入理解其内部架构和算法。
 
 ---
 
