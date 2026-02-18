@@ -17,8 +17,7 @@
 |-------|------|
 | **decision-card** | 结构化决策路径生成器，带评分和推荐选项 |
 | **primitive-ir-compiler** | 将自然语言转换为低熵的 Primitive IR 对象 |
-| **multi-perspective-review** | 多视角设计评审，同行协作+共享画布模式 |
-| **adaptive-team-research** | 自适应多智能体研究团队，自动模式选择和结构化三轮工作流 |
+| **adaptive-team-research** | 自适应多智能体研究团队：三种协作模式（集中调度/领域主导/对等协作）× 三轮工作流（事实→辩论→共识） |
 
 ### 开发工具
 
@@ -98,6 +97,7 @@ my-claude-skills/
 
 | 日期 | Skill | 更新内容 |
 |------|-------|---------|
+| 2026-02-18 | adaptive-team-research | 合并 multi-perspective-review 到 adaptive-team-research，三种模式做实差异化 |
 | 2026-02-18 | 全局 | 新增 multi-perspective-review 和 adaptive-team-research 两个多智能体协作 skill |
 | 2026-01-30 | mermaid-ascii-renderer | 全面优化：范围与限制、API 细节、多图示例、故障决策树、扩展指南 |
 | 2026-01-30 | 全局 | 添加 .gitignore，忽略依赖和构建文件 |

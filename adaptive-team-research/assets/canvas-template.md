@@ -1,195 +1,202 @@
-# {{PROJECT_NAME}} — Adaptive Team Research Canvas
+# {{PROJECT_NAME}} — 自适应多智能体研究画布
 
-> Collaboration Mode: {{MODE}}
-> Date: {{DATE}}
-> Review Target: {{REVIEW_TARGET}}
-
----
-
-## Mode Selection Rationale
-
-Selected Mode: {{MODE}}
-
-Reasoning:
-<!-- Explain why this mode was selected -->
+> 协作模式：{{MODE}}
+> 日期：{{DATE}}
+> 审查目标：{{REVIEW_TARGET}}
 
 ---
 
-## Round 1: Fact Layer (Facts Only, No Evaluation)
+## 模式选择
 
-### PM — Product Perspective
+**选定模式：** {{MODE}}
 
-<!-- PM fills this section -->
-
-**Product Positioning:**
-- 
-
-**Feature Completeness:**
-- 
-
-**Competitive Landscape:**
-- 
-
-**Target User Clues:**
-- 
-
-### Designer — User Experience Perspective
-
-<!-- Designer fills this section -->
-
-**Page Inventory and Structure:**
-- 
-
-**Interaction Pattern Statistics:**
-- 
-
-**Responsive Design Facts:**
-- 
-
-**Accessibility Facts:**
-- 
-
-**Component Consistency Facts:**
-- 
-
-### Engineer — Technical Perspective
-
-<!-- Engineer fills this section -->
-
-**Storage Layer Facts:**
-- 
-
-**Core Engine Facts:**
-- 
-
-**API/Protocol Facts:**
-- 
-
-**Security Mechanism Facts:**
-- 
-
-**Dependency and Coupling Facts:**
-- 
+**选择理由：**
+<!-- 说明为什么选择此模式 -->
 
 ---
 
-## Round 2: Debate Layer
+## Round 1：事实层（只写事实，不评价）
 
-### Voting Matrix
+### PM — 产品视角
 
-| Topic / Issue | PM | Designer | Engineer | Critic | Consensus? |
-|--------------|-----|----------|----------|--------|------------|
-| <!-- Issue 1 --> | | | | | |
-| <!-- Issue 2 --> | | | | | |
-| <!-- Issue 3 --> | | | | | |
+**产品定位：**
+-
 
-Legend:
-- ✅ = +1 (agree)
-- ❌ = Rebuttal (disagree)
-- ⚡ = Challenged by Critic
-- 🤝 = 3+/4 agree (consensus)
-- ⚠️ = ≤2/4 agree (disagreement)
+**功能完成度：**
+-
 
-### Unique Cross-Findings
+**竞品功能对比：**
+-
 
-<!-- Issues that span multiple perspectives -->
+**目标用户线索：**
+-
 
-1. 
+### Designer — 用户视角
 
-### Critic Challenges
+**页面清单与结构：**
+-
 
-<!-- Critic's challenges to weak arguments -->
+**交互模式统计：**
+-
 
-1. [Critic → All] Challenge 1: 
-   - Evidence: 
-   - Response requested from: 
+**响应式设计事实：**
+-
 
----
+**无障碍事实：**
+-
 
-## Round 3: Consensus Layer
+**组件一致性事实：**
+-
 
-### ✅ Consensus Items (3/4 or 4/4 agreement)
+### Engineer — 技术视角
 
-<!-- Items with broad agreement -->
+**存储层事实：**
+-
 
-1. **Issue:** 
-   **Agreement:** All parties agree that...
-   **Recommended Action:** 
-   **Cost Estimate:** 
-   **Priority:** P0 / P1 / P2
+**核心引擎事实：**
+-
 
-### ⚡ Disagreement Items (≤2/4 agreement)
+**API/协议事实：**
+-
 
-<!-- Items without consensus -->
+**安全机制事实：**
+-
 
-1. **Issue:** 
-   **PM Position:** 
-   **Designer Position:** 
-   **Engineer Position:** 
-   **Decision-Maker Weighing:** 
-   **Resolution:** Pending / Decided as...
+**依赖和模块耦合事实：**
+-
 
 ---
 
-## Underestimated Strengths
+## Round 2：辩论层
 
-<!-- Strengths identified by Critic that others overlooked -->
+### 交叉评论投票矩阵
 
-1. 
+<!-- 对等协作模式：使用完整矩阵 -->
+<!-- 集中调度/领域主导模式：使用简化版（见下方） -->
 
----
+#### 完整投票矩阵（对等协作模式）
 
-## Action Plan (Sorted by ROI)
+| 议题 | PM | Designer | Engineer | Critic | 共识？ |
+|------|-----|----------|----------|--------|--------|
+| <!-- 议题 1 --> | | | | | |
+| <!-- 议题 2 --> | | | | | |
+| <!-- 议题 3 --> | | | | | |
 
-| Priority | Action | Cost | Value | Owner | Status |
-|----------|--------|------|-------|-------|--------|
-| P0 | <!-- High value, low cost --> | | High | | |
-| P0 | | | High | | |
-| P1 | <!-- High value, medium cost --> | | High | | |
-| P2 | <!-- Medium value, higher cost --> | | Medium | | |
-| Pending | <!-- Needs user validation --> | | TBD | | |
+图例：
+- ✅ = +1（同意）
+- ❌ = 反驳（不同意）
+- ⚡ = 被 Critic 质疑
+- 🤝 = 3+/4 同意（共识）
+- ⚠️ = ≤2/4 同意（分歧）
 
-### P0: Do Immediately (High Value, Low Cost)
+#### 简化投票矩阵（集中调度 / 领域主导模式）
 
-1. 
+| 议题 | 裁决者立场 | Critic 质询 | 最终裁决 |
+|------|-----------|------------|---------|
+| <!-- 议题 1 --> | | | |
+| <!-- 议题 2 --> | | | |
 
-### P1: Do This Sprint (High Value, Medium Cost)
+### 独到发现
 
-1. 
+<!-- 跨越多个视角的问题 -->
 
-### P2: Plan Next Cycle (Medium Value, Higher Cost)
+1.
 
-1. 
+### Critic 质询
 
-### Pending: Needs User Validation
-
-1. 
-
----
-
-## Summary
-
-**Mode Used:** {{MODE}}
-
-**Key Consensus:** 
-- X items with broad agreement
-
-**Key Disagreements:**
-- Y items requiring decision-maker input
-
-**Top 3 P0 Actions:**
-1. 
-2. 
-3. 
-
-**Critical Insight from Critic:**
+1. [Critic → 全体] 质询 1：
+   - 论据：
+   - 要求回应：
 
 ---
 
-## Appendix: Mode Switches
+## Round 3：共识层
 
-<!-- If mode was switched mid-task, document here -->
+### ✅ 共识项
 
-| Time | From | To | Reason |
-|------|------|-----|--------|
+<!-- 对等协作：3/4 或 4/4 方同意的项 -->
+<!-- 集中调度/领域主导：裁决确认的项 -->
+
+1. **议题：**
+   **结论：**
+   **建议行动：**
+   **成本估算：**
+   **优先级：** P0 / P1 / P2
+
+### ⚡ 分歧项
+
+<!-- 对等协作：未达成共识的项 -->
+<!-- 集中调度/领域主导：裁决中需要权衡的项 -->
+
+1. **议题：**
+   **各方立场：**
+   - PM：
+   - Designer：
+   - Engineer：
+   **裁决/建议：**
+   **决策依据：**
+
+---
+
+## 被低估的优势
+
+<!-- Critic 提醒的、被其他角色忽略的项目优势 -->
+
+1.
+
+---
+
+## 行动计划（按 ROI 排序）
+
+| 优先级 | 行动 | 成本 | 价值 | 负责 | 状态 |
+|--------|------|------|------|------|------|
+| P0 | | | 高 | | |
+| P0 | | | 高 | | |
+| P1 | | | 高 | | |
+| P2 | | | 中 | | |
+| 待定 | | | 待定 | | |
+
+### P0：立即执行（高价值、低成本）
+
+1.
+
+### P1：本轮迭代（高价值、中等成本）
+
+1.
+
+### P2：下个周期规划（中等价值、较高成本）
+
+1.
+
+### 待定：需用户确认
+
+1.
+
+---
+
+## 摘要
+
+**使用模式：** {{MODE}}
+
+**关键共识：**
+- X 项达成共识
+
+**关键分歧：**
+- Y 项需要决策者介入
+
+**Top 3 P0 行动：**
+1.
+2.
+3.
+
+**Critic 关键洞察：**
+
+---
+
+## 附录：模式切换日志
+
+<!-- 如果中途切换了模式，在此记录 -->
+
+| 时间 | 从 | 到 | 原因 |
+|------|-----|-----|------|
 | | | | |

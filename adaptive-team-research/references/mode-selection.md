@@ -1,202 +1,230 @@
-# Mode Selection Guide
+# 模式选择指南
 
-## Overview
+## 概述
 
-This skill supports three collaboration modes. Choose the mode that best fits
-the task characteristics to optimize for speed, depth, or innovation.
+本 skill 支持三种协作模式，不同模式在 agent 数量、prompt 内容和画布结构上有实质差异。根据任务特征选择合适的模式，可以优化速度、深度或创新性。
 
-## Quick Decision Matrix
+## 快速决策矩阵
 
-| Task Characteristic | Recommended Mode | Reasoning |
-|--------------------|------------------|-----------|
-| Time pressure / Deadline | Centralized Dispatch | Fastest convergence |
-| Product decision needed | Centralized Dispatch | Clear ownership, actionable |
-| Experience optimization | Domain-Led (UX) | Deep UX expertise |
-| Technical architecture deep-dive | Domain-Led (Engineer) | Deep technical expertise |
-| Strategy/planning | Domain-Led (PM) | Deep product expertise |
-| Exploring unknown territory | Peer Collaboration | Maximum creativity |
-| Innovation required | Peer Collaboration | Cross-pollination |
-| Research / Discovery | Peer Collaboration | Multiple angles |
-| Unsure / Mixed | Centralized Dispatch | Best default balance |
+| 任务特征 | 推荐模式 | 理由 |
+|---------|---------|------|
+| 时间紧迫 / 有截止日期 | 集中调度 | 最快收敛，Round 2 仅 1 agent |
+| 产品决策 | 集中调度 | 权责清晰，可执行性强 |
+| 用户体验优化 | 领域主导（UX） | UX 深度分析 |
+| 技术架构深入评估 | 领域主导（Engineer） | 技术深度分析 |
+| 产品策略/规划 | 领域主导（PM） | 产品深度分析 |
+| 探索未知领域 | 对等协作 | 最大化创造力 |
+| 创新任务 | 对等协作 | 交叉碰撞产生新想法 |
+| 研究/发现 | 对等协作 | 多角度充分展开 |
+| 不确定 / 混合型 | 集中调度 | 最佳默认选择 |
 
-## Centralized Dispatch Mode
+## 集中调度模式
 
-### When to Use
+### 何时使用
 
-- **Time-sensitive decisions**: Deadlines are tight, need fast results
-- **Product decisions**: Need clear ownership and actionable output
-- **Task uncertainty**: When unsure which mode fits best
-- **Default choice**: When no strong indicators for other modes
+- **时间紧迫**：截止日期近，需要快速产出
+- **产品决策**：需要清晰的权责和可执行的输出
+- **不确定选什么**：当没有强烈的模式倾向时
+- **默认选择**：速度和质量的最佳平衡
 
-### Characteristics
+### 执行路径
 
-**Structure:**
 ```
-User Request
+用户请求
     ↓
-Team-Lead (creates team, coordinates)
-    ↓
-┌───────────┬───────────┬───────────┐
-│ PM        │ Designer  │ Engineer  │ (parallel execution)
-└───────────┴───────────┴───────────┘
-    ↓
-Team-Lead (synthesizes, decides)
-    ↓
-Final Report
-```
-
-**Pros:**
-- Fastest execution time
-- Highest output completeness
-- Clear accountability
-- Minimal coordination overhead
-
-**Cons:**
-- Less cross-pollination
-- May miss creative solutions
-- Single point of decision bias
-
-**Best for:** Product decisions, time-sensitive tasks, executive summaries
-
-## Domain-Led Mode
-
-### When to Use
-
-- **Experience optimization**: Deep UX analysis needed
-- **Technical deep-dive**: Complex architecture assessment
-- **Strategy work**: Product positioning, market analysis
-- **Specialist expertise**: One dimension requires exceptional depth
-
-### Characteristics
-
-**Structure:**
-```
-User Request
-    ↓
-Domain Expert (PM/Designer/Engineer) leads
-    ↓
-┌─────────────────────────────────────┐
-│ Lead coordinates supporting roles   │
-│ - Lead defines direction            │
-│ - Others provide input to lead      │
-└─────────────────────────────────────┘
-    ↓
-Domain Expert synthesizes
-    ↓
-Final Report (domain-deep)
-```
-
-**Pros:**
-- Exceptional depth in chosen domain
-- Leverages specialist expertise
-- Focused output
-
-**Cons:**
-- May under-weight other perspectives
-- Requires clear domain identification
-- Less balanced output
-
-**Best for:** UX reviews, architecture assessments, strategy documents
-
-### Sub-variants
-
-**UX-Led**: Designer leads, PM and Engineer support
-- Use when: User experience is primary concern
-- Output: Deep UX analysis with product and technical context
-
-**Engineer-Led**: Engineer leads, PM and Designer support
-- Use when: Technical feasibility is primary concern
-- Output: Deep technical analysis with product and UX context
-
-**PM-Led**: PM leads, Designer and Engineer support
-- Use when: Product strategy is primary concern
-- Output: Deep product analysis with UX and technical context
-
-## Peer Collaboration Mode
-
-### When to Use
-
-- **Exploratory tasks**: Unknown territory, need broad exploration
-- **Innovation required**: Need creative solutions
-- **Research tasks**: Multiple angles needed
-- **Complex tradeoffs**: No clear right answer
-
-### Characteristics
-
-**Structure:**
-```
-User Request
-    ↓
-Shared Canvas (all roles read/write)
+Team Lead（创建团队、协调）
     ↓
 ┌─────────┬──────────┬──────────┐
-│ PM      │ Designer │ Engineer │ (parallel, equal)
+│ PM      │ Designer │ Engineer │  Round 1：3 agent 并行
+└─────────┴──────────┴──────────┘
+    ↓
+Team Lead 自行交叉验证 + Critic    Round 2：1 agent（Critic）
+    ↓
+Team Lead 直接裁决                 Round 3：0 agent
+    ↓
+最终报告
+```
+
+### 特点
+
+**优势：**
+- 执行最快（Round 2 仅 1 agent）
+- 输出完整度最高
+- 权责清晰
+- 协调开销最小
+
+**劣势：**
+- 交叉碰撞较少
+- 可能遗漏创造性方案
+- 单一决策点偏差
+
+### 实质差异
+
+| 轮次 | Agent 数 | 行为 |
+|------|---------|------|
+| Round 1 | 3 | 标准 prompt，并行执行 |
+| Round 2 | 1 | 仅 Critic；交叉评审由 Team Lead 自行完成 |
+| Round 3 | 0 | Team Lead 直接裁决，无投票矩阵 |
+
+---
+
+## 领域主导模式
+
+### 何时使用
+
+- **用户体验优化**：需要深入的 UX 分析
+- **技术架构评估**：复杂架构需要深入审查
+- **产品策略制定**：产品定位、市场分析
+- **专家深度**：某个维度需要超出常规的深度
+
+### 执行路径
+
+```
+用户请求
+    ↓
+确定 Lead 角色（PM / Designer / Engineer）
+    ↓
+┌──────────────┬──────────┬──────────┐
+│ Lead（加深版）│ 辅助 1   │ 辅助 2   │  Round 1：3 agent
+│              │（精简版） │（精简版） │  Lead 加深，其余精简
+└──────────────┴──────────┴──────────┘
+    ↓
+Lead 交叉评审 + Critic              Round 2：2 agents
+    ↓
+Lead 综合裁决                       Round 3：0 agent
+    ↓
+最终报告（领域深度突出）
+```
+
+### 子类型
+
+**UX 主导**：Designer 领导，PM 和 Engineer 辅助
+- 输出：深度 UX 分析 + 产品和技术上下文
+
+**Engineer 主导**：Engineer 领导，PM 和 Designer 辅助
+- 输出：深度技术分析 + 产品和 UX 上下文
+
+**PM 主导**：PM 领导，Designer 和 Engineer 辅助
+- 输出：深度产品分析 + UX 和技术上下文
+
+### 特点
+
+**优势：**
+- 选定领域的分析深度最高
+- Lead 加深版 prompt 覆盖更多维度
+- 聚焦输出
+
+**劣势：**
+- 可能低估其他视角
+- 需要正确识别关键领域
+- 输出平衡性较弱
+
+### 实质差异
+
+| 轮次 | Agent 数 | 行为 |
+|------|---------|------|
+| Round 1 | 3 | Lead 用加深版 prompt，其余用精简版 |
+| Round 2 | 2 | Lead 交叉评审 + Critic；其余角色不参与 |
+| Round 3 | 0 | Lead 综合裁决，简化投票矩阵 |
+
+---
+
+## 对等协作模式
+
+### 何时使用
+
+- **探索性任务**：未知领域，需要广泛探索
+- **创新需求**：需要创造性解决方案
+- **研究任务**：需要多角度充分展开
+- **复杂权衡**：没有明确的正确答案
+
+### 执行路径
+
+```
+用户请求
+    ↓
+共享画布（所有角色读写）
+    ↓
+┌─────────┬──────────┬──────────┐
+│ PM      │ Designer │ Engineer │  Round 1：3 agent 并行（对等）
 └────┬────┴────┬─────┴────┬─────┘
-     └─────────┼──────────┘
-               ↓
-         Critic (challenges all)
-               ↓
-     Consensus or Vote
-               ↓
-         Final Report
+     ↓         ↓          ↓
+┌─────────┬──────────┬──────────┬─────────┐
+│ PM 交叉 │Designer  │Engineer  │ Critic  │  Round 2：4 agents
+│ 评论    │交叉评论  │交叉评论  │ 质询    │  三方互评 + 质询
+└─────────┴──────────┴──────────┴─────────┘
+     ↓
+投票矩阵 + 共识收敛                Round 3：Team Lead
+     ↓
+最终报告
 ```
 
-**Pros:**
-- Maximum creativity
-- Cross-pollination of ideas
-- Balanced perspectives
-- Discovers overlooked insights
+### 特点
 
-**Cons:**
-- Slower convergence
-- Requires structured debate protocol
-- May produce conflicting recommendations
+**优势：**
+- 创造力最大化
+- 交叉碰撞产生新洞察
+- 视角最平衡
+- 发现容易被忽略的问题
 
-**Best for:** Research, innovation, complex problem-solving, discovery
+**劣势：**
+- 收敛最慢（Round 2 有 4 agents）
+- 需要结构化辩论协议
+- 可能产出相互矛盾的建议
 
-## Mode Selection Decision Tree
+### 实质差异
+
+| 轮次 | Agent 数 | 行为 |
+|------|---------|------|
+| Round 1 | 3 | 标准 prompt，并行对等执行 |
+| Round 2 | 4 | 3 交叉评论者 + Critic，三方互评 |
+| Round 3 | 0 | 完整投票矩阵 + 共识判定 |
+
+---
+
+## 模式选择决策树
 
 ```
-Is there a clear domain that needs exceptional depth?
-├── YES → Domain-Led Mode
-│         └── Which domain?
-│               ├── UX → UX-Led
-│               ├── Technical → Engineer-Led
-│               └── Strategy → PM-Led
+是否有某个领域需要特别深入？
+├── 是 → 领域主导模式
+│         └── 哪个领域？
+│               ├── UX → UX 主导
+│               ├── 技术 → Engineer 主导
+│               └── 产品策略 → PM 主导
 │
-└── NO → Is time a critical constraint?
-          ├── YES → Centralized Dispatch Mode
+└── 否 → 时间是否紧迫？
+          ├── 是 → 集中调度模式
           │
-          └── NO → Is exploration/innovation the goal?
-                    ├── YES → Peer Collaboration Mode
-                    └── NO  → Centralized Dispatch Mode (default)
+          └── 否 → 目标是探索/创新吗？
+                    ├── 是 → 对等协作模式
+                    └── 否 → 集中调度模式（默认）
 ```
 
-## Hybrid Approaches
+## 混合方案
 
-### Start with Peer, Converge with Centralized
+### 先对等，后集中
 
-For complex tasks:
-1. Start with Peer Collaboration for exploration (Round 1-2)
-2. Switch to Centralized Dispatch for decision (Round 3)
+适合复杂任务：
+1. Round 1-2 使用对等协作模式（充分探索）
+2. Round 3 切换为集中调度式裁决（快速决策）
 
-Benefits: Creative exploration + fast decision-making
+好处：创造性探索 + 快速决策
 
-### Domain-Led with Peer Elements
+### 领域主导 + 对等元素
 
-For deep analysis tasks:
-1. Domain expert leads overall direction
-2. Use peer-style debate for specific sub-questions
-3. Domain expert synthesizes
+适合深度分析任务：
+1. 领域专家主导整体方向
+2. 特定子问题使用对等式辩论
+3. 领域专家综合裁决
 
-Benefits: Depth + balanced input on key questions
+好处：深度 + 关键问题的平衡输入
 
-## Switching Modes Mid-Task
+## 中途切换模式
 
-It's acceptable to switch modes if the task characteristics change:
+任务特征可能随进展变化，允许中途切换：
 
-- **Peer → Centralized**: When exploration is done, decision needed
-- **Centralized → Domain-Led**: When depth needed in specific area
-- **Domain-Led → Peer**: When tradeoffs emerge needing multi-angle input
+- **对等 → 集中调度**：探索完成，需要决策
+- **集中调度 → 领域主导**：发现某领域需要深入
+- **领域主导 → 对等**：出现需要多角度权衡的取舍
 
-Document mode switches in the shared canvas for transparency.
+切换时在共享画布中记录切换原因，确保透明。

@@ -1,160 +1,154 @@
 ---
 name: adaptive-team-research
-description: "Orchestrate adaptive multi-agent research teams with automatic mode selection and structured three-round workflow. Use when the user needs comprehensive multi-perspective analysis, design reviews, architecture assessments, or any task requiring structured team collaboration. Triggers include phrases like 'research this', 'review from multiple angles', 'analyze comprehensively', 'multi-perspective analysis', 'design review', 'architecture assessment'. The skill automatically selects the optimal collaboration mode (centralized dispatch, domain-led, or peer collaboration) based on task characteristics, then executes a structured Facts → Debate → Consensus workflow with cost-aware actionable outputs."
+description: "自适应多智能体研究团队。根据任务特征自动选择协作模式（集中调度/领域主导/对等协作），执行结构化三轮工作流（事实→辩论→共识），输出带成本估算的行动计划。触发词：多视角审查、设计评审、架构评估、研究分析、review this、multi-perspective analysis。"
 ---
 
-# Adaptive Team Research
+# 自适应多智能体研究团队
 
-## Overview
+## 概述
 
-Orchestrate intelligent multi-agent research teams that adapt to task requirements.
-This skill combines automatic mode selection (centralized/domain-led/peer) with
-a structured three-round workflow (Facts → Debate → Consensus) to produce
-high-quality, actionable insights.
+编排自适应多智能体研究团队，根据任务特征选择最优协作模式，通过三轮结构化工作流（事实收集 → 交叉辩论 → 共识收敛）产出可操作的洞察和行动计划。
 
-## When to Use
+三种模式不是文字标签，而是在 agent 数量、prompt 内容、画布结构上有实质差异的执行路径。
 
-Use this skill for:
-- Comprehensive project or design reviews requiring multiple perspectives
-- Product strategy analysis with conflicting viewpoints
-- Architecture assessments needing cross-functional input
-- Any task where the user explicitly requests multi-angle or team-based analysis
-- Tasks requiring both exploration AND concrete action plans
+## 适用场景
 
-## Workflow
+- 项目设计评审、架构评估
+- 产品策略分析（需要多方博弈视角）
+- 代码质量审计（需要跨职能交叉验证）
+- 探索性研究（未知领域需要发散思维）
+- 用户明确要求多角度或团队协作式分析的任何任务
 
-### Phase 0: Mode Selection
+## 三种模式的实质差异
 
-Analyze the task and select the optimal collaboration mode:
+| 维度 | 集中调度 | 领域主导 | 对等协作 |
+|------|---------|---------|---------|
+| Round 1 agent 数 | 3（并行） | 3（Lead 加深，其余精简） | 3（并行，对等） |
+| Round 2 agent 数 | **1**（仅 Critic） | **2**（Lead 交叉 + Critic） | **4**（3 交叉 + Critic） |
+| Round 2 交叉评审 | Team Lead 自行完成 | Lead 评审全部，其余不参与 | 三方互评 |
+| Round 3 决策方式 | Team Lead 直接裁决 | Lead 综合裁决 | 投票矩阵 + 共识收敛 |
+| 适用场景 | 时间紧、产品决策、不确定选哪个模式 | 某领域需要特别深入 | 探索性/创新任务 |
 
-**Centralized Dispatch Mode** (recommended for product decisions, time-sensitive tasks)
-- Team-lead coordinates parallel independent research
-- Fastest convergence, highest output completeness
-- Use when: deadlines are tight, clear ownership is needed
+## 工作流
 
-**Domain-Led Mode** (recommended for experience optimization, professional depth)
-- Domain expert (UX/Engineer/PM) leads with supporting roles
-- Deep expertise in specific area
-- Use when: one dimension requires exceptional depth
+### Phase 0：模式选择
 
-**Peer Collaboration Mode** (recommended for exploratory/innovative tasks)
-- All roles equal, shared canvas, structured debate
-- Maximum creativity and cross-pollination
-- Use when: exploring new territory, innovation required
+分析任务特征，选择协作模式。详见 `references/mode-selection.md`。
 
-Default: Centralized Dispatch Mode (best balance of speed and quality)
+**集中调度模式**（默认，推荐用于产品决策、时间紧迫、不确定选哪个模式）
+- Team Lead 协调并行研究，自行完成交叉验证和裁决
+- 最快收敛，最高输出完整度
+- Round 2 仅启动 Critic，交叉评审由 Team Lead 自行完成
 
-### Phase 1: Round 1 — Fact Gathering (Parallel)
+**领域主导模式**（推荐用于某个维度需要特别深入的场景）
+- 领域专家（PM/Designer/Engineer）主导，其余辅助
+- Round 1 Lead 角色使用加深版 prompt，其余使用精简版
+- Round 2 仅 Lead 进行交叉评审 + Critic
 
-Launch three Explore agents in parallel:
+**对等协作模式**（推荐用于探索性/创新任务）
+- 所有角色对等，结构化辩论
+- Round 2 三方互评 + Critic，最大化交叉碰撞
+- Round 3 使用完整投票矩阵
 
-1. **PM Agent** — Product perspective
-   - Load prompt from `references/role-prompts.md` section "PM Fact Gatherer"
-   - Research: product positioning, feature completeness, competitive landscape
-   - Output: Structured fact list with source references
+### Phase 1：Round 1 — 事实收集（并行）
 
-2. **Designer Agent** — User experience perspective
-   - Load prompt from `references/role-prompts.md` section "Designer Fact Gatherer"
-   - Research: UX patterns, interaction flows, accessibility, consistency
-   - Output: Structured fact list with source references
+启动三个 Explore agent 并行执行，角色 prompt 从 `references/role-prompts.md` 加载。
 
-3. **Engineer Agent** — Technical perspective
-   - Load prompt from `references/role-prompts.md` section "Engineer Fact Gatherer"
-   - Research: architecture, dependencies, security, performance
-   - Output: Structured fact list with source references
+**按模式区分：**
 
-**Key constraint:** Only facts, no evaluations or suggestions.
-**Parallel execution:** All three agents run simultaneously.
+| 模式 | PM agent | Designer agent | Engineer agent |
+|------|----------|---------------|----------------|
+| 集中调度 | 标准 prompt | 标准 prompt | 标准 prompt |
+| 领域主导 | Lead 加深版 / 精简版 | Lead 加深版 / 精简版 | Lead 加深版 / 精简版 |
+| 对等协作 | 标准 prompt | 标准 prompt | 标准 prompt |
 
-**On completion:**
-1. Collect all three fact reports
-2. Distill key facts into the shared canvas Round 1 section
-3. Copy canvas template from `assets/canvas-template.md` to project directory
-4. Fill in PROJECT_NAME, DATE, REVIEW_TARGET variables
+**关键约束：** 只写事实，不做评价，不给建议。禁用词："好"、"差"、"应该"、"建议"、"改进"。
 
-### Phase 2: Round 2 — Cross-Debate (Parallel)
+**完成后 Team Lead 动作：**
+1. 收集三份事实清单
+2. 从 `assets/canvas-template.md` 复制画布模板到项目目录
+3. 替换模板变量：`{{PROJECT_NAME}}`、`{{DATE}}`、`{{REVIEW_TARGET}}`、`{{MODE}}`
+4. 提炼关键事实写入画布 Round 1 区域
 
-Launch four Explore agents in parallel, all reading the shared canvas:
+### Phase 2：Round 2 — 交叉辩论（按模式执行）
 
-1. **PM Cross-Reviewer** — Reviews Designer and Engineer findings
-2. **Designer Cross-Reviewer** — Reviews PM and Engineer findings from UX perspective
-3. **Engineer Cross-Reviewer** — Reviews PM and Designer findings with cost estimates
-4. **Critic** — Challenges weak arguments, identifies contradictions, highlights overlooked strengths
+所有 agent 读取共享画布。角色 prompt 从 `references/role-prompts.md` 加载。
 
-Load detailed prompts from `references/role-prompts.md` section "Round 2 Roles".
+**集中调度模式（1 agent）：**
+- 仅启动 Critic agent
+- 交叉评审由 Team Lead 自行完成（不启动额外 agent）
+- Team Lead 读取三方事实，自行写交叉评论
+- Critic 对所有发现发起质询
 
-**Output format:**
-```
-[Role → Target] Re: topic — +1 / Rebuttal, reasoning...
-[Role cross-finding] Overlooked issue spanning perspectives...
-[Critic → All] Challenge N: statement
-  Evidence: ...
-  Response requested from: PM / Designer / Engineer
-```
+**领域主导模式（2 agents）：**
+- 启动 Lead 交叉评审 agent + Critic agent
+- Lead 评审全部其他视角的发现
+- 其余角色不参与 Round 2
+- Critic 对所有发现发起质询
 
-**On completion:**
-1. Collect all four reports
-2. Build voting matrix (topic × role → +1/rebuttal)
-3. Extract unique cross-findings and Critic challenges
-4. Write Round 2 summary to shared canvas
+**对等协作模式（4 agents）：**
+- 启动 PM 交叉评审 + Designer 交叉评审 + Engineer 交叉评审 + Critic，共 4 个 agent 并行
+- 三方互评（每人评其他两方）
+- Critic 对所有发现发起质询
 
-### Phase 3: Round 3 — Consensus Convergence (Team Lead)
+**完成后 Team Lead 动作：**
+1. 收集所有报告
+2. 构建投票矩阵（对等协作使用完整矩阵；集中调度和领域主导使用简化版）
+3. 提取独到发现和 Critic 质询
+4. 写入画布 Round 2 区域
 
-Performed by the orchestrating agent (not delegated).
+### Phase 3：Round 3 — 共识收敛（Team Lead 执行）
 
-**Steps:**
-1. Build consensus from voting matrix:
-   - **Consensus (✅):** 3/4 or 4/4 agree → include in action plan
-   - **Disagreement (⚡):** 2/4 or fewer agree → document all positions
-2. For each disagreement, write "decision-maker weighing" note
-3. List underestimated strengths (from Critic's challenges)
-4. Produce prioritized action plan sorted by ROI:
-   - P0: High value, low cost (immediate)
-   - P1: High value, medium cost (this sprint)
-   - P2: Medium value, higher cost (next cycle)
-   - Pending: Needs user validation
+由编排 agent（Team Lead）直接执行，不委派给子 agent。
 
-**Cost estimation requirement:** Every action must include implementation cost estimate from Engineer.
+**按模式区分：**
 
-### Phase 4: Delivery
+**集中调度 / 领域主导：Team Lead（或 Lead）直接裁决**
+1. 整理事实和 Critic 质询
+2. 直接作出裁决，标注裁决依据
+3. 对分歧项写"裁决理由"说明
+4. 输出行动计划
 
-1. Write complete Round 3 results to shared canvas
-2. Present concise summary to user:
-   - Number of consensus items and disagreements
-   - Top 3 P0 actions with costs
-   - Key insight from Critic
-3. Point user to full canvas file for details
+**对等协作：投票矩阵 + 共识收敛**
+1. 汇总投票矩阵（每个议题各方的 +1/反驳）
+2. 共识判定：
+   - ✅ 共识：3/4 或 4/4 方同意 → 纳入行动计划
+   - ⚡ 分歧：2/4 或更少方同意 → 记录各方立场和理由
+3. 对分歧项写"建议决策者权衡"说明
+4. 整理被低估的优势（Critic 提醒的）
+5. 按 ROI 排序输出行动计划
 
-## Critical Design Principles
+**行动计划优先级：**
+- P0：高价值、低成本（立即执行）
+- P1：高价值、中等成本（本轮迭代）
+- P2：中等价值、较高成本（下个周期规划）
+- 待定：需用户确认
 
-1. **Adaptive mode selection** — Match collaboration structure to task needs
-2. **Facts before opinions** — Round 1 is pure fact-gathering
-3. **Peer equality** — No role outranks another; Critic challenges all
-4. **Structured disagreement** — Every rebuttal must include reasoning
-5. **Forced convergence** — Round 3 must produce consensus and action plan
-6. **Cost awareness** — Engineer estimates cost for every suggested change
-7. **Critic as catalyst** — Critic does not write findings, only challenges others
+**成本估算要求：** 每个行动项必须包含 Engineer 的实现成本估算。
 
-## Resources
+### Phase 4：交付
 
-### references/role-prompts.md
-Detailed prompt templates for all roles across both rounds. Load and customize when launching agents.
+1. 将完整 Round 3 结果写入共享画布
+2. 向用户呈现简明摘要：
+   - 使用的模式及选择理由
+   - 共识项和分歧项数量
+   - Top 3 P0 行动项（附成本）
+   - Critic 的关键洞察
+3. 指引用户查看完整画布文件
 
-### references/mode-selection.md
-Guidelines for selecting collaboration mode based on task characteristics.
+## 核心设计原则
 
-### assets/canvas-template.md
-Shared canvas template. Copy to project directory, replace variables before use.
+1. **模式决定执行路径** — 不同模式的 agent 数量、prompt 内容、画布结构有实质差异
+2. **事实先于观点** — Round 1 纯事实收集，观点仅在 Round 2 引入
+3. **对等尊重** — 无论哪种模式，Critic 对所有角色一视同仁
+4. **结构化分歧** — 每个反驳必须附带理由，不接受无依据的意见
+5. **强制收敛** — Round 3 必须产出共识和行动计划，不允许无限辩论
+6. **Critic 是催化剂** — Critic 不写自己的发现，只挑战他人的发现
+7. **成本感知** — Engineer 必须为每个改进建议估算实现成本
 
-## Mode Selection Reference
+## 资源文件
 
-See `references/mode-selection.md` for detailed guidance on choosing between:
-- Centralized Dispatch (speed + completeness)
-- Domain-Led (depth in specific area)
-- Peer Collaboration (innovation + creativity)
-
-Quick guide:
-- Product decision + time pressure → Centralized
-- Experience optimization needed → Domain-Led (UX)
-- Exploring unknown territory → Peer Collaboration
-- Unsure → Default to Centralized
+- `references/role-prompts.md` — 各角色各轮次的详细 prompt 模板，按模式分别说明
+- `references/mode-selection.md` — 模式选择指南：决策树、混合模式、中途切换
+- `references/round-protocols.md` — 轮次协议详解：每轮按模式说明 agent 数量、类型、并行策略、完成标志
+- `assets/canvas-template.md` — 共享画布模板，复制到项目目录后替换变量使用
