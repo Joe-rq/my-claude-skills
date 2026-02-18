@@ -1,6 +1,6 @@
 # My Claude Skills
 
-个人自定义的 [Claude Skills](https://support.claude.com/en/articles/12512176-what-are-skills) 集合，用于扩展 Claude 在特定领域的专业能力。
+个人在用的 [Claude Skills](https://support.claude.com/en/articles/12512176-what-are-skills) 集合，用于扩展 Claude 在特定领域的专业能力。
 
 ## Skills 列表
 
