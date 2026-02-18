@@ -1,6 +1,15 @@
 ---
 name: adaptive-team-research
-description: "自适应多智能体研究团队。根据任务特征自动选择协作模式（集中调度/领域主导/对等协作），执行结构化三轮工作流（事实→辩论→共识），输出带成本估算的行动计划。触发词：多视角审查、设计评审、架构评估、研究分析、review this、multi-perspective analysis。"
+description: >-
+  自适应多智能体研究团队。根据任务特征自动选择协作模式（集中调度/领域主导/对等协作），执行结构化三轮工作流（事实→辩论→共识），输出带成本估算的行动计划。触发词：多视角审查、设计评审、架构评估、研究分析、review
+  this、multi-perspective analysis。
+metadata:
+  author: joe
+  version: 1.0.0
+  title: 自适应多智能体研究团队
+  description_zh: >-
+    自适应多智能体研究团队。根据任务特征自动选择协作模式（集中调度/领域主导/对等协作），执行结构化三轮工作流（事实→辩论→共识），输出带成本估算的行动计划。触发词：多视角审查、设计评审、架构评估、研究分析、review
+    this、multi-perspective analysis。
 ---
 
 # 自适应多智能体研究团队
