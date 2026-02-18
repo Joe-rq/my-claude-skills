@@ -6,33 +6,33 @@
 
 ### 内容创作
 
-| Skill | 描述 |
-|-------|------|
-| **writing-assistant-skill** | 自媒体写作助手，帮助完成从选题到发布的完整流程 |
-| **excalidraw-prompt-engineer** | AI 驱动的 Excalidraw 图表生成系统，支持 23+ 图表类型 |
+| Skill | 描述 | 语言 |
+|-------|------|------|
+| **writing-assistant-skill** | 自媒体写作助手，帮助完成从选题到发布的完整流程 | 中文 |
+| **excalidraw-prompt-engineer** | AI 驱动的 Excalidraw 图表生成系统，支持 23+ 图表类型 | English |
 
 ### 思维与决策
 
-| Skill | 描述 |
-|-------|------|
-| **decision-card** | 结构化决策路径生成器，带评分和推荐选项 |
-| **primitive-ir-compiler** | 将自然语言转换为低熵的 Primitive IR 对象 |
-| **adaptive-team-research** | 自适应多智能体研究团队：三种协作模式（集中调度/领域主导/对等协作）× 三轮工作流（事实→辩论→共识） |
+| Skill | 描述 | 语言 |
+|-------|------|------|
+| **decision-card** | 结构化决策路径生成器，带评分和推荐选项 | English |
+| **primitive-ir-compiler** | 将自然语言转换为低熵的 Primitive IR 对象 | 双语 |
+| **adaptive-team-research** | 自适应多智能体研究团队：三种协作模式（集中调度/领域主导/对等协作）× 三轮工作流（事实→辩论→共识） | 中文 |
 
 ### 开发工具
 
-| Skill | 描述 | 亮点 |
-|-------|------|------|
-| **mermaid-ascii-renderer** | beautiful-mermaid ASCII/Unicode 渲染系统完整指南 | ✅ 支持 5 种图表类型<br>✅ 详细的 API 文档<br>✅ 故障排查决策树<br>✅ 扩展开发指南 |
-| **explain-code** | 使用视觉图表和类比解释代码，适合教学和文档编写 |
-| **text-to-json** | 将自然语言描述转换为复杂的分层 JSON 结构 |
+| Skill | 描述 | 语言 | 亮点 |
+|-------|------|------|------|
+| **mermaid-ascii-renderer** | beautiful-mermaid ASCII/Unicode 渲染系统完整指南 | 中文 | ✅ 支持 5 种图表类型<br>✅ 详细的 API 文档<br>✅ 故障排查决策树<br>✅ 扩展开发指南 |
+| **explain-code** | 使用视觉图表和类比解释代码，适合教学和文档编写 | English |
+| **text-to-json** | 将自然语言描述转换为复杂的分层 JSON 结构 | English |
 
 ### 专业领域
 
-| Skill | 描述 |
-|-------|------|
-| **medical-triage** | 智能医疗导诊助手，模拟分诊护士问诊流程 |
-| **source-tracing** | 信息溯源 skill |
+| Skill | 描述 | 语言 |
+|-------|------|------|
+| **medical-triage** | 智能医疗导诊助手，模拟分诊护士问诊流程 | 中文 |
+| **source-tracing** | 信息溯源，从二手内容回溯到权威原始信息源 | 中文 |
 
 ## 快速开始
 
@@ -67,6 +67,8 @@ my-claude-skills/
 │   │   ├── diagrams.md
 │   │   └── ...
 │   └── assets/               # 资源文件（可选）
+├── docs/                     # 参考资料（非 skill）
+├── reviews/                  # 审查画布输出
 ├── README.md                 # 本文件
 └── .gitignore               # Git 忽略配置
 ```
@@ -97,8 +99,8 @@ my-claude-skills/
 
 | 日期 | Skill | 更新内容 |
 |------|-------|---------|
+| 2026-02-18 | 全局 | 项目审查优化：重命名 skills.md→SKILL.md、agent-skills-doc→docs/、README 增加语言列、frontmatter 标准化 |
 | 2026-02-18 | adaptive-team-research | 合并 multi-perspective-review 到 adaptive-team-research，三种模式做实差异化 |
-| 2026-02-18 | 全局 | 新增 multi-perspective-review 和 adaptive-team-research 两个多智能体协作 skill |
 | 2026-01-30 | mermaid-ascii-renderer | 全面优化：范围与限制、API 细节、多图示例、故障决策树、扩展指南 |
 | 2026-01-30 | 全局 | 添加 .gitignore，忽略依赖和构建文件 |
 

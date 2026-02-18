@@ -66,7 +66,7 @@ description: "自适应多智能体研究团队。根据任务特征自动选择
 
 **完成后 Team Lead 动作：**
 1. 收集三份事实清单
-2. 从 `assets/canvas-template.md` 复制画布模板到项目目录
+2. 从 `assets/canvas-template.md` 复制画布模板到项目的 `reviews/` 目录（不存在则创建）
 3. 替换模板变量：`{{PROJECT_NAME}}`、`{{DATE}}`、`{{REVIEW_TARGET}}`、`{{MODE}}`
 4. 提炼关键事实写入画布 Round 1 区域
 
@@ -151,4 +151,4 @@ description: "自适应多智能体研究团队。根据任务特征自动选择
 - `references/role-prompts.md` — 各角色各轮次的详细 prompt 模板，按模式分别说明
 - `references/mode-selection.md` — 模式选择指南：决策树、混合模式、中途切换
 - `references/round-protocols.md` — 轮次协议详解：每轮按模式说明 agent 数量、类型、并行策略、完成标志
-- `assets/canvas-template.md` — 共享画布模板，复制到项目目录后替换变量使用
+- `assets/canvas-template.md` — 共享画布模板，复制到项目的 `reviews/` 目录后替换变量使用
