@@ -4,35 +4,10 @@
 
 ## Skills 列表
 
-### 内容创作
-
-| Skill | 描述 | 语言 |
-|-------|------|------|
-| **writing-assistant-skill** | 自媒体写作助手，帮助完成从选题到发布的完整流程 | 中文 |
-| **excalidraw-prompt-engineer** | AI 驱动的 Excalidraw 图表生成系统，支持 23+ 图表类型 | English |
-
-### 思维与决策
-
-| Skill | 描述 | 语言 |
-|-------|------|------|
-| **decision-card** | 结构化决策路径生成器，带评分和推荐选项 | English |
-| **primitive-ir-compiler** | 将自然语言转换为低熵的 Primitive IR 对象 | 双语 |
-| **adaptive-team-research** | 自适应多智能体研究团队：三种协作模式（集中调度/领域主导/对等协作）× 三轮工作流（事实→辩论→共识） | 中文 |
-
-### 开发工具
-
 | Skill | 描述 | 语言 | 亮点 |
 |-------|------|------|------|
+| **adaptive-team-research** | 自适应多智能体研究团队：三种协作模式 × 三轮工作流（事实→辩论→共识） | 中文 | 深度研究分析 |
 | **mermaid-ascii-renderer** | beautiful-mermaid ASCII/Unicode 渲染系统完整指南 | 中文 | ✅ 支持 5 种图表类型<br>✅ 详细的 API 文档<br>✅ 故障排查决策树<br>✅ 扩展开发指南 |
-| **explain-code** | 使用视觉图表和类比解释代码，适合教学和文档编写 | English |
-| **text-to-json** | 将自然语言描述转换为复杂的分层 JSON 结构 | English |
-
-### 专业领域
-
-| Skill | 描述 | 语言 |
-|-------|------|------|
-| **medical-triage** | 智能医疗导诊助手，模拟分诊护士问诊流程 | 中文 |
-| **source-tracing** | 信息溯源，从二手内容回溯到权威原始信息源 | 中文 |
 
 ## 快速开始
 
@@ -53,7 +28,7 @@ xcopy <skill-name> %USERPROFILE%\.claude\skills\ /E /I
 重启 Claude Desktop 后，在对话中触发 skill：
 
 - 测试 `mermaid-ascii-renderer`: "怎么用 beautiful-mermaid 生成 ASCII 图表？"
-- 测试 `writing-assistant`: "帮我规划一篇关于 AI 的文章"
+- 测试 `adaptive-team-research`: "帮我多角度分析一下这个设计方案"
 
 ## 项目结构
 
