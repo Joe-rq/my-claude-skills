@@ -93,7 +93,7 @@ Agent 总数：Round 1 = 3, Round 2 = 4, Round 3 = 0
 
 - Lead 角色使用**加深版** prompt（调研范围更广、维度更多）
 - 其余两个角色使用**精简版** prompt（聚焦核心事实）
-- Prompt 版本详见 `role-prompts.md`
+- Prompt 版本详见 `role-prompts-r1.md`
 
 #### 对等协作
 

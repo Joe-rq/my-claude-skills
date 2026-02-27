@@ -7,8 +7,11 @@ description: >-
   code audit, multi-perspective analysis.
 metadata:
   author: joe
-  version: 1.1.0
+  version: 1.2.0
   title: 自适应多智能体研究团队
+  description_zh: >-
+    自适应多智能体团队，用于软件项目评审。自动选择协作模式（集中调度/领域主导/对等协作），
+    通过三轮结构化工作流（事实收集→交叉辩论→共识收敛）产出含成本估算的可执行行动计划。
 ---
 
 # 自适应多智能体研究团队
@@ -25,6 +28,13 @@ metadata:
 - 产品策略分析（需要多方博弈视角）
 - 代码质量审计（需要跨职能交叉验证）
 - 用户明确要求多角度或团队协作式分析的软件项目评审任务
+
+## 不适用场景
+
+- 单一维度的快速代码审查（直接用 architect-reviewer agent 更高效）
+- 非软件项目的分析任务（本 skill 的角色和 prompt 面向软件项目设计）
+- 需要实际执行代码修改的任务（本 skill 只产出分析报告和行动计划）
+- 简单问题的快速问答（多 agent 编排的启动成本远大于收益）
 
 ## 三种模式的实质差异
 
@@ -61,7 +71,7 @@ metadata:
 
 ### Phase 1：Round 1 — 事实收集（并行）
 
-启动三个 Explore agent 并行执行，角色 prompt 从 `references/role-prompts.md` 加载。
+启动三个 Explore agent 并行执行，角色 prompt 从 `references/role-prompts-r1.md` 加载。
 
 **按模式区分：**
 
@@ -81,61 +91,30 @@ metadata:
 
 ### Phase 2：Round 2 — 交叉辩论（按模式执行）
 
-所有 agent 读取共享画布。角色 prompt 从 `references/role-prompts.md` 加载。
+所有 agent 读取共享画布。角色 prompt 从 `references/role-prompts-r2.md` 加载。
 
-**集中调度模式（1 agent）：**
-- 仅启动 Critic agent
-- 交叉评审由 Team Lead 自行完成（不启动额外 agent）
-- Team Lead 读取三方事实，自行写交叉评论
-- Critic 对所有发现发起质询
+| 模式 | 启动 agent | 核心行为 |
+|------|-----------|---------|
+| 集中调度 | Critic × 1 | Team Lead 自行交叉验证 + Critic 质询 |
+| 领域主导 | Lead 交叉 + Critic × 2 | Lead 评审全部 + Critic 质询 |
+| 对等协作 | 3 交叉 + Critic × 4 | 三方互评 + Critic 质询 |
 
-**领域主导模式（2 agents）：**
-- 启动 Lead 交叉评审 agent + Critic agent
-- Lead 评审全部其他视角的发现
-- 其余角色不参与 Round 2
-- Critic 对所有发现发起质询
+完成后 Team Lead 构建投票矩阵、提取独到发现，写入画布 Round 2 区域。
 
-**对等协作模式（4 agents）：**
-- 启动 PM 交叉评审 + Designer 交叉评审 + Engineer 交叉评审 + Critic，共 4 个 agent 并行
-- 三方互评（每人评其他两方）
-- Critic 对所有发现发起质询
-
-**完成后 Team Lead 动作：**
-1. 收集所有报告
-2. 构建投票矩阵（对等协作使用完整矩阵；集中调度和领域主导使用简化版）
-3. 提取独到发现和 Critic 质询
-4. 写入画布 Round 2 区域
+> 详细协议（agent 类型、并行策略、输出格式）见 `references/round-protocols.md` Round 2 部分。
 
 ### Phase 3：Round 3 — 共识收敛（Team Lead 执行）
 
-由编排 agent（Team Lead）直接执行，不委派给子 agent。
+由 Team Lead 直接执行，不委派给子 agent。
 
-**按模式区分：**
+| 模式 | 决策方式 | Critic 关键质询处理 |
+|------|---------|-------------------|
+| 集中调度/领域主导 | 裁决者直接裁决 | 必须逐条回应，不充分则归入"待定" |
+| 对等协作 | 投票矩阵 + 共识收敛 | 三方未回应则自动归入"待定" |
 
-**集中调度 / 领域主导：Team Lead（或 Lead）直接裁决**
-1. 整理事实和 Critic 质询
-2. 直接作出裁决，标注裁决依据
-3. Critic 标记为"关键质询"的议题，裁决中必须逐条回应；回应不充分则归入"待定：需用户确认"
-4. 对分歧项写"裁决理由"说明
-5. 输出行动计划
+**行动计划优先级：** P0（立即执行）→ P1（本轮迭代）→ P2（下周期）→ 待定（需用户确认）。每项必须包含 Engineer 成本估算。
 
-**对等协作：投票矩阵 + 共识收敛**
-1. 汇总投票矩阵（每个议题 PM/Designer/Engineer 三方的 +1/反驳）
-2. 共识判定（Critic 不参与投票，仅质询）：
-   - ✅ 共识：2/3 或 3/3 方同意 → 纳入行动计划
-   - ⚡ 分歧：1/3 或更少方同意 → 记录各方立场和理由
-   - 🚨 Critic 升级：Critic 标记为"关键质询"且三方未实质性回应的议题 → 自动归入"待定：需用户确认"，不得直接进入 P0/P1
-3. 对分歧项写"建议决策者权衡"说明
-4. 整理被低估的优势（Critic 提醒的）
-5. 按 ROI 排序输出行动计划
-
-**行动计划优先级：**
-- P0：高价值、低成本（立即执行）
-- P1：高价值、中等成本（本轮迭代）
-- P2：中等价值、较高成本（下个周期规划）
-- 待定：需用户确认
-
-**成本估算要求：** 每个行动项必须包含 Engineer 的实现成本估算。
+> 详细共识判定规则、投票矩阵格式见 `references/round-protocols.md` Round 3 部分。
 
 ### Phase 4：交付
 
@@ -186,9 +165,20 @@ metadata:
 6. **Critic 是催化剂** — Critic 不写自己的发现，只挑战他人的发现；不投票，但对关键质询有升级权
 7. **成本感知** — Engineer 必须为每个改进建议估算实现成本
 
+## 常见错误
+
+| 错误 | 解决 |
+|------|------|
+| Round 1 agent 输出包含评价性词汇 | 检查输出是否违反禁用词列表（"好/差/应该/建议"），违反则要求重写 |
+| 模式选定后未等用户确认就启动 Round 1 | Phase 0 必须有明确用户确认点，用户不同意则根据反馈重新选择 |
+| Critic 关键质询超过 3 条 | 提醒 Critic 保持克制，标记上限为 3 条，滥用会稀释效力 |
+| 对等协作模式 Round 3 未使用投票矩阵 | 对等模式必须走完整投票流程，不可退化为裁决模式 |
+| 行动计划缺少成本估算 | 每个行动项必须包含 Engineer 的实现成本，缺失则补充 |
+
 ## 资源文件
 
-- `references/role-prompts.md` — 各角色各轮次的详细 prompt 模板，按模式分别说明
+- `references/role-prompts-r1.md` — Round 1 各角色 prompt 模板（标准/加深/精简版）
+- `references/role-prompts-r2.md` — Round 2 交叉评论者 + Critic prompt 模板
 - `references/mode-selection.md` — 模式选择指南：决策树、混合模式、中途切换
 - `references/round-protocols.md` — 轮次协议详解：每轮按模式说明 agent 数量、类型、并行策略、完成标志
 - `assets/canvas-template.md` — 共享画布模板，复制到项目的 `reviews/` 目录后替换变量使用
