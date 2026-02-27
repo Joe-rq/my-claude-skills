@@ -1,13 +1,14 @@
 ---
 name: adaptive-team-research
 description: >-
-  Adaptive multi-agent team for software project reviews. Auto-selects collaboration mode
-  (centralized / domain-lead / peer) and runs a 3-round workflow (facts → debate → consensus)
-  to produce actionable plans with cost estimates. Triggers: design review, architecture review,
-  code audit, multi-perspective analysis.
+  Adaptive multi-agent team for software project reviews. Auto-selects
+  collaboration mode (centralized / domain-lead / peer) and runs a 3-round
+  workflow (facts → debate → consensus) to produce actionable plans with cost
+  estimates. Triggers: design review, architecture review, code audit,
+  multi-perspective analysis.
 metadata:
   author: joe
-  version: 1.2.0
+  version: 1.0.2
   title: 自适应多智能体研究团队
   description_zh: >-
     自适应多智能体团队，用于软件项目评审。自动选择协作模式（集中调度/领域主导/对等协作），
