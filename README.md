@@ -7,6 +7,7 @@
 | Skill | 描述 | 语言 | 亮点 |
 |-------|------|------|------|
 | **adaptive-team-research** | 自适应多智能体研究团队：三种协作模式 × 三轮工作流（事实→辩论→共识） | 中文 | 深度研究分析 |
+| **product-opportunity-research** | 多智能体产品机会深度研究：6 Agent 独立分析→交叉质询→总控裁决，产出机会地图+路线图+商业打包策略 | 中文 | ✅ 6 专业 Agent 并行<br>✅ 11 维量化评分<br>✅ 三圈交集优先级<br>✅ 0-36 月产品路线图 |
 | **mermaid-ascii-renderer** | beautiful-mermaid ASCII/Unicode 渲染系统完整指南 | 中文 | ✅ 支持 5 种图表类型<br>✅ 详细的 API 文档<br>✅ 故障排查决策树<br>✅ 扩展开发指南 |
 
 ## 快速开始
@@ -29,6 +30,7 @@ xcopy <skill-name> %USERPROFILE%\.claude\skills\ /E /I
 
 - 测试 `mermaid-ascii-renderer`: "怎么用 beautiful-mermaid 生成 ASCII 图表？"
 - 测试 `adaptive-team-research`: "帮我多角度分析一下这个设计方案"
+- 测试 `product-opportunity-research`: "帮我做一个深度研究，主题是智能家居安全产品的市场机会"
 
 ## 项目结构
 
@@ -72,6 +74,7 @@ my-claude-skills/
 
 | 日期 | Skill | 更新内容 |
 |------|-------|---------|
+| 2026-02-27 | product-opportunity-research | 新增：6 Agent 多智能体产品机会深度研究框架 |
 | 2026-02-18 | 全局 | 项目审查优化：重命名 skills.md→SKILL.md、agent-skills-doc→docs/、README 增加语言列、frontmatter 标准化 |
 | 2026-02-18 | adaptive-team-research | 合并 multi-perspective-review 到 adaptive-team-research，三种模式做实差异化 |
 | 2026-01-30 | mermaid-ascii-renderer | 全面优化：范围与限制、API 细节、多图示例、故障决策树、扩展指南 |
@@ -110,4 +113,4 @@ MIT
 
 **维护者**: Joe  
 **创建时间**: 2024-12  
-**最后更新**: 2026-02-19
+**最后更新**: 2026-02-27
