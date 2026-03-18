@@ -14,6 +14,14 @@
 
 ### 安装 Skills
 
+**方式一：通过 42plugin 安装（推荐）**
+
+```bash
+42plugin install joe/joe/product-opportunity-research
+```
+
+**方式二：手动安装**
+
 将对应 skill 目录复制到 Claude Desktop 的 skills 目录：
 
 ```bash
@@ -75,7 +83,7 @@ my-claude-skills/
 | 日期 | Skill | 更新内容 |
 |------|-------|---------|
 | 2026-03-13 | adaptive-team-research | v1.3.1 评测驱动优化：canvas 创建强制约束、行动计划负责角色必填、用户确认强制门禁 |
-| 2026-03-18 | product-opportunity-research | 修复：Agent 3 增加"传统方案已够用清单"识别伪 AI；Section 1 增加独立"不该做清单"（≥5项） |
+| 2026-03-18 | product-opportunity-research | v1.0.1 发布：6 Agent 交叉质询框架 + 11 维评分 + 机会地图 + 0-36月路线图 |
 | 2026-02-27 | product-opportunity-research | 新增：6 Agent 多智能体产品机会深度研究框架 |
 | 2026-02-18 | 全局 | 项目审查优化：重命名 skills.md→SKILL.md、agent-skills-doc→docs/、README 增加语言列、frontmatter 标准化 |
 | 2026-02-18 | adaptive-team-research | 合并 multi-perspective-review 到 adaptive-team-research，三种模式做实差异化 |

@@ -1,19 +1,21 @@
 ---
 name: product-opportunity-research
 description: >-
-  Use when conducting deep product opportunity research or feature prioritization.
-  6 specialized agents (User JTBD, Workflow, Tech Feasibility, System Integration,
-  Compliance, Business) independently analyze then cross-examine to produce opportunity
-  maps, priority lists, product roadmaps, and business packaging strategies. Triggers:
-  product research, opportunity analysis, market analysis, product strategy, deep research,
-  opportunity map, business model analysis.
+  Use when conducting deep product opportunity research or feature
+  prioritization. 6 specialized agents (User JTBD, Workflow, Tech Feasibility,
+  System Integration, Compliance, Business) independently analyze then
+  cross-examine to produce opportunity maps, priority lists, product roadmaps,
+  and business packaging strategies. Triggers: product research, opportunity
+  analysis, market analysis, product strategy, deep research, opportunity map,
+  business model analysis.
 metadata:
   author: joe
-  version: "1.0.0"
   title: 多智能体产品机会深度研究
   description_zh: >-
     多智能体产品机会深度研究框架。6个专业 agent（用户需求、工作流、技术可行性、系统集成、
     合规安全、商业模式）独立分析后交叉质询，产出机会地图、优先级清单、产品路线图和商业打包策略。
+  version: 1.0.1
+  license: MIT
 ---
 
 # 多智能体产品机会深度研究
