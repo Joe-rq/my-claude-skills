@@ -14,13 +14,25 @@
 
 ### 安装 Skills
 
-**方式一：通过 42plugin 安装（推荐）**
+**方式一：`npx skills` 安装（推荐）**
+
+```bash
+# 安装全部 skills
+npx skills add joe/skills --skill '*'
+
+# 或安装指定 skill
+npx skills add joe/skills --skill product-opportunity-research
+npx skills add joe/skills --skill adaptive-team-research
+npx skills add joe/skills --skill mermaid-ascii-renderer
+```
+
+**方式二：42plugin 安装**
 
 ```bash
 42plugin install joe/joe/product-opportunity-research
 ```
 
-**方式二：手动安装**
+**方式三：手动安装**
 
 将对应 skill 目录复制到 Claude Desktop 的 skills 目录：
 
@@ -43,7 +55,7 @@ xcopy <skill-name> %USERPROFILE%\.claude\skills\ /E /I
 ## 项目结构
 
 ```
-my-claude-skills/
+skills/
 ├── <skill-name>/              # 每个 skill 独立目录
 │   ├── SKILL.md              # 技能主体文档（必需）
 │   ├── README.md             # 目录导航（可选）
@@ -82,6 +94,7 @@ my-claude-skills/
 
 | 日期 | Skill | 更新内容 |
 |------|-------|---------|
+| 2026-03-18 | 全局 | 仓库重命名：my-claude-skills → skills，支持 `npx skills add joe/skills` 安装 |
 | 2026-03-13 | adaptive-team-research | v1.3.1 评测驱动优化：canvas 创建强制约束、行动计划负责角色必填、用户确认强制门禁 |
 | 2026-03-18 | product-opportunity-research | v1.0.1 发布：6 Agent 交叉质询框架 + 11 维评分 + 机会地图 + 0-36月路线图 |
 | 2026-02-27 | product-opportunity-research | 新增：6 Agent 多智能体产品机会深度研究框架 |
