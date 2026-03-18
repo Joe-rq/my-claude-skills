@@ -1,14 +1,13 @@
 ---
 name: adaptive-team-research
 description: >-
-  Adaptive multi-agent team for software project reviews. Auto-selects
-  collaboration mode (centralized / domain-lead / peer) and runs a 3-round
-  workflow (facts → debate → consensus) to produce actionable plans with cost
-  estimates. Triggers: design review, architecture review, code audit,
-  multi-perspective analysis.
+  Adaptive multi-agent team for software project reviews. Auto-selects collaboration mode
+  (centralized / domain-lead / peer) and runs a 3-round workflow (facts → debate → consensus)
+  to produce actionable plans with cost estimates. Triggers: design review, architecture review,
+  code audit, multi-perspective analysis.
 metadata:
   author: joe
-  version: 1.0.2
+  version: 1.3.1
   title: 自适应多智能体研究团队
   description_zh: >-
     自适应多智能体团队，用于软件项目评审。自动选择协作模式（集中调度/领域主导/对等协作），
@@ -68,7 +67,7 @@ metadata:
 - Round 2 三方互评 + Critic，最大化交叉碰撞
 - Round 3 使用完整投票矩阵
 
-**用户确认点：** 模式选定后，向用户展示所选模式及选择理由，等待用户确认后再启动 Round 1。如果用户不同意，根据反馈重新选择。
+**【强制门禁】用户确认点：** 模式选定后，**必须停下来**向用户展示所选模式、选择理由和备选模式，然后等待用户确认。**在用户明确确认之前，禁止启动 Round 1 的任何 agent。** 如果用户不同意，根据反馈重新选择。
 
 ### Phase 1：Round 1 — 事实收集（并行）
 
@@ -86,7 +85,7 @@ metadata:
 
 **完成后 Team Lead 动作：**
 1. 收集三份事实清单
-2. 从 `assets/canvas-template.md` 复制画布模板到项目的 `reviews/` 目录（不存在则创建）
+2. **【必须执行】** 从 `assets/canvas-template.md` 复制画布模板到项目的 `reviews/` 目录（不存在则先创建目录），文件命名为 `reviews/{project-name}-review.md`。**不要将画布内容嵌入其他输出文件，必须创建独立的画布文件。**
 3. 替换模板变量：`{{PROJECT_NAME}}`、`{{DATE}}`、`{{REVIEW_TARGET}}`、`{{MODE}}`
 4. 提炼关键事实写入画布 Round 1 区域
 
@@ -113,7 +112,7 @@ metadata:
 | 集中调度/领域主导 | 裁决者直接裁决 | 必须逐条回应，不充分则归入"待定" |
 | 对等协作 | 投票矩阵 + 共识收敛 | 三方未回应则自动归入"待定" |
 
-**行动计划优先级：** P0（立即执行）→ P1（本轮迭代）→ P2（下周期）→ 待定（需用户确认）。每项必须包含 Engineer 成本估算。
+**行动计划优先级：** P0（立即执行）→ P1（本轮迭代）→ P2（下周期）→ 待定（需用户确认）。每项必须包含：Engineer 成本估算 + 负责角色（PM/Designer/Engineer）。
 
 > 详细共识判定规则、投票矩阵格式见 `references/round-protocols.md` Round 3 部分。
 
@@ -171,10 +170,12 @@ metadata:
 | 错误 | 解决 |
 |------|------|
 | Round 1 agent 输出包含评价性词汇 | 检查输出是否违反禁用词列表（"好/差/应该/建议"），违反则要求重写 |
-| 模式选定后未等用户确认就启动 Round 1 | Phase 0 必须有明确用户确认点，用户不同意则根据反馈重新选择 |
+| 模式选定后未等用户确认就启动 Round 1 | Phase 0 是强制门禁——必须输出模式选择结果后停下等用户确认，禁止在同一轮中继续执行 Round 1 |
 | Critic 关键质询超过 3 条 | 提醒 Critic 保持克制，标记上限为 3 条，滥用会稀释效力 |
 | 对等协作模式 Round 3 未使用投票矩阵 | 对等模式必须走完整投票流程，不可退化为裁决模式 |
 | 行动计划缺少成本估算 | 每个行动项必须包含 Engineer 的实现成本，缺失则补充 |
+| 行动计划缺少负责角色 | 每个行动项必须标注负责角色（PM/Designer/Engineer），缺失则补充 |
+| 画布内容嵌入输出文件而未创建独立文件 | 必须在 `reviews/` 目录下创建独立画布文件，不要将画布内容写入其他文件 |
 
 ## 资源文件
 
