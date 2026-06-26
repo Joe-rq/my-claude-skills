@@ -10,7 +10,7 @@
 > 组装 Round 2 prompt 时自动附加此规则。
 
 ```
-请先读取共享画布：{{CANVAS_PATH}}
+【输入】Round 1 已收集的三方事实由 Workflow 自动注入到 prompt 末尾（勿自行读取文件；画布在 Round 3 才生成）。
 
 【输出约束】禁止无依据的意见。每个反驳必须有理由。
 ```
@@ -153,8 +153,9 @@
 
 | 变量 | 说明 | 适用范围 |
 |------|------|---------|
-| `{{CANVAS_PATH}}` | 共享画布文件路径 | Round 2 通用规则 |
 | `{{LEAD_ROLE}}` | 领域主导者角色名（PM / Designer / Engineer） | Lead 交叉评审 |
 | `{{LEAD_PERSPECTIVE}}` | 领域主导者视角（产品 / 用户体验 / 技术） | Lead 交叉评审 |
 | `{{OTHER_ROLE_1}}` | 其他角色 1 | Lead 交叉评审 |
 | `{{OTHER_ROLE_2}}` | 其他角色 2 | Lead 交叉评审 |
+
+> Round 2 不再使用 `{{CANVAS_PATH}}`：Round 1 事实由 Workflow 脚本注入 prompt（见 `workflow-orchestration.md` §6.2），画布在 Round 3 才生成。

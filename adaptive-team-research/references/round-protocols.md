@@ -1,6 +1,8 @@
 # 轮次协议详解
 
 > 本文件详细说明每轮协议的执行规范，按模式分别说明 agent 数量、类型选择、并行策略和完成标志。
+>
+> **执行引擎（v1.4.0 起）：** Round 1-2 由 Workflow 工具确定性执行（`parallel()` barrier + schema 化输出），Round 3 由主会话执行。编排实现见 `workflow-orchestration.md`。本文的 agent 数量、依赖关系、并行策略拓扑不变，只是执行引擎从"主会话即兴调用 agent"升级为"Workflow 脚本确定性编排"。
 
 ---
 
@@ -78,9 +80,9 @@ Agent 总数：Round 1 = 3, Round 2 = 4, Round 3 = 0
 
 1. 三个 Explore agent 并行启动（PM、Designer、Engineer）
 2. 每个 agent 只负责自己的视角领域
-3. 输出必须是结构化事实清单，每条附带来源（文件路径:行号）
+3. 输出必须是结构化事实清单，每条附带来源（文件路径:行号）——由 schema 强制
 4. 禁止使用评价性词汇（"好"、"差"、"应该"、"建议"）
-5. 所有 agent 使用 `run_in_background: true` 并行执行
+5. 由 Workflow 的 `parallel()` 并行执行，barrier 强制三份等齐才进 Round 2
 
 ### 按模式区分
 
@@ -104,12 +106,11 @@ Agent 总数：Round 1 = 3, Round 2 = 4, Round 3 = 0
 
 三个 agent 全部返回事实清单。
 
-### Team Lead 动作
+### Workflow 输出
 
-1. 收集三份事实清单
-2. **【必须执行】** 复制画布模板到项目的 `reviews/` 目录（不存在则先创建），文件命名为 `reviews/{project-name}-review.md`。**必须创建独立文件，不要嵌入其他输出。** 替换模板变量。
-3. 提炼关键事实写入共享画布的 Round 1 区域
-4. 确保事实无遗漏但避免冗余
+Round 1 由 Workflow `parallel()` 并行执行三 agent，barrier 强制等齐。输出为结构化事实清单（每条带来源），随 Workflow 结果返回主会话。
+
+> 画布的创建与 Round 1 区域填充统一在 Round 3 由主会话完成，Round 1 不写画布。
 
 ---
 
@@ -127,9 +128,9 @@ Agent 总数：Round 1 = 3, Round 2 = 4, Round 3 = 0
 - Critic × 1
 
 **执行方式：**
-1. Team Lead 自行读取三方事实，写交叉评论
-2. Critic agent 读取完整画布，对所有三方发起质询
-3. Team Lead 不需要格式化的交叉评论输出，直接内化理解
+1. Workflow 将 Round 1 三方事实注入 Critic 的 prompt
+2. Critic agent 对所有三方发起质询
+3. Team Lead 的交叉验证在 Round 3 直接内化完成（不启动额外 agent）
 
 **输出：**
 - Team Lead 的交叉评论直接写入画布（非 agent 输出）
@@ -142,9 +143,10 @@ Agent 总数：Round 1 = 3, Round 2 = 4, Round 3 = 0
 - Critic × 1
 
 **执行方式：**
-1. Lead 交叉评审 agent 读取画布，对其他两方所有发现写 +1/反驳
-2. Critic agent 读取画布，对所有三方发起质询
-3. 两个 agent 并行执行
+1. Workflow 将 Round 1 三方事实注入两个 agent 的 prompt
+2. Lead 交叉评审 agent 对其他两方所有发现写 +1/反驳
+3. Critic agent 对所有三方发起质询
+4. 两个 agent 由 `parallel()` 并行执行
 
 **输出：**
 - Lead 交叉评审的结构化评论
@@ -159,9 +161,10 @@ Agent 总数：Round 1 = 3, Round 2 = 4, Round 3 = 0
 - Critic × 1
 
 **执行方式：**
-1. 三个交叉评论者各自读取完整画布，对其他两方发现写 +1/反驳
-2. Critic 读取完整画布，对所有三方发起质询
-3. 四个 agent 并行执行
+1. Workflow 将 Round 1 三方事实注入四个 agent 的 prompt
+2. 三个交叉评论者各自对其他两方发现写 +1/反驳
+3. Critic 对所有三方发起质询
+4. 四个 agent 由 `parallel()` 并行执行
 
 **输出格式：**
 - 交叉评论：`[角色 → 目标角色] 关于 XXX：+1 / 反驳，理由...`
@@ -172,15 +175,11 @@ Agent 总数：Round 1 = 3, Round 2 = 4, Round 3 = 0
 
 所有启动的 agent 全部返回报告。
 
-### Team Lead 动作
+### Workflow 输出
 
-1. 收集所有报告
-2. 构建投票矩阵：
-   - **对等协作**：完整矩阵（议题 × PM/Designer/Engineer → +1/反驳），含 Consensus 列；Critic 列为"质询"而非"投票"
-   - **领域主导**：简化矩阵（仅 Lead 评论 + Critic 质询）
-   - **集中调度**：简化矩阵（Team Lead 自行评论 + Critic 质询）
-3. 提取独到发现和 Critic 质询
-4. 写入画布 Round 2 区域
+Round 2 由 Workflow 按模式分支并行执行，返回交叉评论 + Critic 质询的结构化结果给主会话。
+
+> 投票矩阵的构建、独到发现提取、画布 Round 2 区域填充统一在 Round 3 由主会话完成（需综合 Round 1+2 全部结果）。
 
 ---
 
@@ -245,8 +244,8 @@ Team Lead（非 agent），直接在主会话中执行。
 
 | 轮次 | Agent 类型 | 理由 |
 |------|-----------|------|
-| Round 1 | Explore | 只需读取代码，不需要写文件 |
-| Round 2 | Explore | 只需读取画布和代码，不需要写文件 |
+| Round 1 | Explore（经 Workflow `agentType:'Explore'`） | 只需读取代码，不需要写文件 |
+| Round 2 | Explore（经 Workflow `agentType:'Explore'`） | 读取代码 + prompt 内 Round 1 事实，不需要写文件 |
 | Round 3 | Team Lead 自行完成 | 需要写入画布，且是综合判断 |
 
 ### 按模式汇总

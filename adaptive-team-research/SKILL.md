@@ -1,17 +1,19 @@
 ---
 name: adaptive-team-research
 description: >-
-  Adaptive multi-agent team for software project reviews. Auto-selects collaboration mode
-  (centralized / domain-lead / peer) and runs a 3-round workflow (facts → debate → consensus)
-  to produce actionable plans with cost estimates. Triggers: design review, architecture review,
-  code audit, multi-perspective analysis.
+  Adaptive multi-agent team for software project reviews. Auto-selects
+  collaboration mode (centralized / domain-lead / peer) and runs a 3-round
+  workflow (facts → debate → consensus) to produce actionable plans with cost
+  estimates. Triggers: design review, architecture review, code audit,
+  multi-perspective analysis.
 metadata:
   author: joe
-  version: 1.3.1
   title: 自适应多智能体研究团队
   description_zh: >-
     自适应多智能体团队，用于软件项目评审。自动选择协作模式（集中调度/领域主导/对等协作），
     通过三轮结构化工作流（事实收集→交叉辩论→共识收敛）产出含成本估算的可执行行动计划。
+  version: 1.4.0
+  license: MIT
 ---
 
 # 自适应多智能体研究团队
@@ -21,6 +23,8 @@ metadata:
 编排自适应多智能体研究团队，根据任务特征选择最优协作模式，通过三轮结构化工作流（事实收集 → 交叉辩论 → 共识收敛）产出可操作的洞察和行动计划。
 
 三种模式不是文字标签，而是在 agent 数量、prompt 内容、画布结构上有实质差异的执行路径。
+
+Round 1-2 由 Workflow 工具确定性编排（`parallel()` barrier 强制 agent 等齐、schema 化结构输出），Phase 0 模式选择与 Round 3 共识收敛留在主会话。详见 `references/workflow-orchestration.md`。
 
 ## 适用场景
 
@@ -69,9 +73,11 @@ metadata:
 
 **【强制门禁】用户确认点：** 模式选定后，**必须停下来**向用户展示所选模式、选择理由和备选模式，然后等待用户确认。**在用户明确确认之前，禁止启动 Round 1 的任何 agent。** 如果用户不同意，根据反馈重新选择。
 
-### Phase 1：Round 1 — 事实收集（并行）
+用户确认后，主会话按选定模式从 `role-prompts-r1.md` / `role-prompts-r2.md` 组装各角色 prompt，连同模式/项目/画布路径打包为 `args`，**调用 Workflow 工具执行 Round 1-2**（编排细节见 `references/workflow-orchestration.md`）。
 
-启动三个 Explore agent 并行执行，角色 prompt 从 `references/role-prompts-r1.md` 加载。
+### Phase 1：Round 1 — 事实收集（Workflow 并行执行）
+
+由 Workflow 工具启动三个 Explore agent 并行收集事实，`parallel()` 的 barrier 强制三份等齐才进 Round 2。各角色 prompt 在 Phase 0 按下表从 `references/role-prompts-r1.md` 选用版本、组装后经 `args` 传入。
 
 **按模式区分：**
 
@@ -81,17 +87,13 @@ metadata:
 | 领域主导 | Lead 加深版 / 精简版 | Lead 加深版 / 精简版 | Lead 加深版 / 精简版 |
 | 对等协作 | 标准 prompt | 标准 prompt | 标准 prompt |
 
-**关键约束：** 只写事实，不做评价，不给建议。禁用词："好"、"差"、"应该"、"建议"、"改进"。
+**关键约束：** 只写事实，不做评价，不给建议。禁用词："好"、"差"、"应该"、"建议"、"改进"。由 schema 强制每条事实附带来源（文件路径:行号）。
 
-**完成后 Team Lead 动作：**
-1. 收集三份事实清单
-2. **【必须执行】** 从 `assets/canvas-template.md` 复制画布模板到项目的 `reviews/` 目录（不存在则先创建目录），文件命名为 `reviews/{project-name}-review.md`。**不要将画布内容嵌入其他输出文件，必须创建独立的画布文件。**
-3. 替换模板变量：`{{PROJECT_NAME}}`、`{{DATE}}`、`{{REVIEW_TARGET}}`、`{{MODE}}`
-4. 提炼关键事实写入画布 Round 1 区域
+> 画布的创建与填充统一在 Round 3 由主会话完成，Round 1 不写画布。
 
-### Phase 2：Round 2 — 交叉辩论（按模式执行）
+### Phase 2：Round 2 — 交叉辩论（Workflow 按模式分支执行）
 
-所有 agent 读取共享画布。角色 prompt 从 `references/role-prompts-r2.md` 加载。
+由 Workflow 工具按模式分支启动 agent。脚本将 Round 1 的结构化事实注入每个 Round 2 agent 的 prompt（agent 不再读取画布文件）。角色 prompt 模板从 `references/role-prompts-r2.md` 组装后经 `args` 传入。
 
 | 模式 | 启动 agent | 核心行为 |
 |------|-----------|---------|
@@ -99,13 +101,17 @@ metadata:
 | 领域主导 | Lead 交叉 + Critic × 2 | Lead 评审全部 + Critic 质询 |
 | 对等协作 | 3 交叉 + Critic × 4 | 三方互评 + Critic 质询 |
 
-完成后 Team Lead 构建投票矩阵、提取独到发现，写入画布 Round 2 区域。
+Workflow 返回 Round 1 事实 + Round 2 评论/质询的结构化结果给主会话。投票矩阵、独到发现的提取由主会话在 Round 3 完成。
 
-> 详细协议（agent 类型、并行策略、输出格式）见 `references/round-protocols.md` Round 2 部分。
+> 详细协议（agent 类型、并行策略、输出格式）见 `references/round-protocols.md` Round 2 部分；编排实现见 `references/workflow-orchestration.md`。
 
-### Phase 3：Round 3 — 共识收敛（Team Lead 执行）
+### Phase 3：Round 3 — 共识收敛（主会话 Team Lead 执行）
 
-由 Team Lead 直接执行，不委派给子 agent。
+主会话接收 Workflow 返回的 Round 1-2 结构化结果，直接执行，不委派给子 agent。
+
+1. **【必须执行】** 从 `assets/canvas-template.md` 复制画布模板到项目的 `reviews/` 目录（不存在则先创建），文件命名 `reviews/{project-name}-review.md`。**不要将画布内容嵌入其他输出文件，必须创建独立的画布文件。**
+2. 替换模板变量：`{{PROJECT_NAME}}`、`{{DATE}}`、`{{REVIEW_TARGET}}`、`{{MODE}}`
+3. 将 Round 1 事实、Round 2 评论/质询写入画布对应区域，构建投票矩阵、提取独到发现
 
 | 模式 | 决策方式 | Critic 关键质询处理 |
 |------|---------|-------------------|
@@ -140,10 +146,10 @@ metadata:
 >
 > *等待用户确认...*
 
-**用户确认后 → 执行 Round 1~3：**
-- Round 1：并行启动 PM / Designer / Engineer 三个 Explore agent 收集事实
-- Round 2：Team Lead 自行交叉验证 + 启动 Critic agent 质询
-- Round 3：Team Lead 直接裁决，输出行动计划
+**用户确认后 → 调用 Workflow 执行 Round 1~2，主会话执行 Round 3：**
+- Round 1（Workflow）：并行启动 PM / Designer / Engineer 三个 Explore agent 收集事实
+- Round 2（Workflow）：Team Lead 自行交叉验证 + 启动 Critic agent 质询
+- Round 3（主会话）：Team Lead 直接裁决，输出行动计划并写画布
 
 **Phase 4 — 交付摘要：**
 > **使用模式：** 集中调度
@@ -176,6 +182,9 @@ metadata:
 | 行动计划缺少成本估算 | 每个行动项必须包含 Engineer 的实现成本，缺失则补充 |
 | 行动计划缺少负责角色 | 每个行动项必须标注负责角色（PM/Designer/Engineer），缺失则补充 |
 | 画布内容嵌入输出文件而未创建独立文件 | 必须在 `reviews/` 目录下创建独立画布文件，不要将画布内容写入其他文件 |
+| 把整个流程塞进单个 Workflow 而丢了强制门禁 | Phase 0（模式选择 + 用户确认）和 Round 3 必须留在主会话；Workflow 只接管 Round 1-2。详见 `references/workflow-orchestration.md` |
+| 把 Workflow 脚本当死脚本逐字照搬 | 脚本是模板，主会话应按任务调整 prompt / agent 数 / schema；官方最佳实践强调"当模板而非死脚本" |
+| Round 2 agent 试图读取画布文件 | workflow 化后画布在 Round 3 才生成；Round 1 事实由脚本注入 Round 2 prompt，agent 不读画布 |
 
 ## 资源文件
 
@@ -183,4 +192,5 @@ metadata:
 - `references/role-prompts-r2.md` — Round 2 交叉评论者 + Critic prompt 模板
 - `references/mode-selection.md` — 模式选择指南：决策树、混合模式、中途切换
 - `references/round-protocols.md` — 轮次协议详解：每轮按模式说明 agent 数量、类型、并行策略、完成标志
+- `references/workflow-orchestration.md` — Dynamic Workflow 编排协议：Round 1-2 的脚本骨架、schema、prompt 映射、技术约束
 - `assets/canvas-template.md` — 共享画布模板，复制到项目的 `reviews/` 目录后替换变量使用
