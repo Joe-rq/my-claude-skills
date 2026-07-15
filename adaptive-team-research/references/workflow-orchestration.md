@@ -12,10 +12,10 @@
 | 失效模式 | 旧版（prompt 编排）的表现 | Workflow 如何结构性消除 |
 |---------|--------------------------|------------------------|
 | Agentic laziness | Team Lead 可能 Round 1 只跑 2 个 agent 就"觉得够了" | `parallel()` 的 barrier **强制**等齐全部 agent 才进下一轮 |
-| Goal drift | 三轮长 context 中丢失"只写事实/禁用词"约束 | 每个 agent 独立 context，约束写死在 prompt + schema |
+| Goal drift | 三轮长 context 中丢失"只写事实"约束 | 每个 agent 独立 context，约束写死在 prompt + schema |
 | Self-preferential bias | Team Lead 自己整合易偏爱自己视角 | Round 2 独立 Critic agent 对抗质询，输出经 schema 结构化 |
 
-同时，schema 化输出让 Round 1 事实清单天然带 `文件路径:行号` 来源字段，比旧版"自然语言事实清单 + 禁用词检查"更硬。
+同时，schema 化输出让 Round 1 事实清单强制带 `source` 来源字段（required），比旧版"自然语言事实清单 + 禁用词检查"更硬。
 
 ---
 
@@ -51,7 +51,7 @@
 
 ### Round 3（共识收敛 + 交付）
 
-1. 接收 Workflow 返回的 `{ mode, round1, round2 }` 结构化结果
+1. 接收 Workflow 返回的 `{ mode, round1, missingRoles, round2 }` 结构化结果；`missingRoles` 非空时，画布和交付摘要必须声明本次评审缺失哪个视角
 2. 从 `assets/canvas-template.md` 复制画布到项目 `reviews/{project}-review.md`，替换模板变量
 3. 将 Round 1 事实、Round 2 投票矩阵/Critic 质询写入画布对应区域
 4. 按 `round-protocols.md` Round 3 的模式规则做裁决（集中/领域=直接裁决；对等=投票矩阵 + 共识判定）
@@ -89,6 +89,7 @@
 {
   "mode": "centralized",
   "round1": [ {role, facts: [{claim, source}]}, ... ],   // 三角色事实
+  "missingRoles": [],                                     // Round 1 失败的角色，非空时 Round 3 交付必须声明缺角
   "round2": { critic: {...}, cross: [...] }              // 按模式结构不同
 }
 ```
@@ -138,11 +139,13 @@ const FACT_SCHEMA = {
       items: {
         type: 'object',
         properties: {
-          claim: { type: 'string', description: '纯事实陈述，禁用评价词' },
-          source: { type: 'string', description: '文件路径:行号；无来源留空' },
+          claim: { type: 'string', description: '可独立验证的纯事实陈述' },
+          source: { type: 'string', description: '文件路径:行号；来自模型知识的事实（如竞品对比）写"知识"' },
         },
-        required: ['claim'],
+        required: ['claim', 'source'],
       },
+      maxItems: 40,
+      description: '按信息量排序，上限 40 条，宁缺毋滥',
     },
   },
   required: ['role', 'facts'],
@@ -180,10 +183,10 @@ const CROSS_SCHEMA = {
         type: 'object',
         properties: {
           target_role: { type: 'string' },
-          topic: { type: 'string' },
+          topic: { type: 'string', description: '议题：由事实推出的可争论主张，不是裸事实复述' },
           stance: { type: 'string', enum: ['+1', '反驳'] },
-          reason: { type: 'string' },
-          cost_hours: { type: 'number', description: '仅 Engineer 交叉评论必填' },
+          reason: { type: 'string', description: '引用支撑/反驳该议题的事实来源' },
+          cost_size: { type: 'string', enum: ['S', 'M', 'L'], description: '仅 Engineer 交叉评论必填：S<半天 / M半天~2天 / L>2天' },
         },
         required: ['target_role', 'topic', 'stance', 'reason'],
       },
@@ -206,15 +209,22 @@ export const meta = {
   ],
 }
 
-const { mode, leadRole, projectDir, canvasPath, prompts } = JSON.parse(args)  // args 运行时是 JSON 字符串，需解析（见 §7）
+// 防御性解析：args 可能是 JSON 字符串也可能是对象（取决于 harness 版本，见 §7）
+const input = typeof args === 'string' ? JSON.parse(args) : args
+const { mode, leadRole, projectDir, canvasPath, prompts } = input
 
 // ---- Round 1：三角色并行事实收集（barrier 等齐）----
 phase('Round 1')
-const facts = (await parallel([
+const R1_ROLES = ['PM', 'Designer', 'Engineer']
+const r1Raw = await parallel([
   () => agent(prompts.pm_r1,        { label: 'PM-R1',        phase: 'Round 1', agentType: 'Explore', schema: FACT_SCHEMA }),
   () => agent(prompts.designer_r1,  { label: 'Designer-R1',  phase: 'Round 1', agentType: 'Explore', schema: FACT_SCHEMA }),
   () => agent(prompts.engineer_r1,  { label: 'Engineer-R1',  phase: 'Round 1', agentType: 'Explore', schema: FACT_SCHEMA }),
-])).filter(Boolean)   // 任一 agent 失败不拖垮整体
+])
+// 记录失败角色——缺角必须显式上报，Round 3 交付时向用户声明，禁止静默降级为两方评审
+const missingRoles = R1_ROLES.filter((_, i) => !r1Raw[i])
+if (missingRoles.length) log(`⚠️ Round 1 缺角：${missingRoles.join(', ')} 收集失败`)
+const facts = r1Raw.filter(Boolean)
 
 // ---- 把 Round 1 结构化事实序列化，注入 Round 2 各 agent 的 prompt ----
 // 替代旧版"Round 2 agent 读画布文件"；画布由主会话在 Round 3 生成
@@ -234,24 +244,26 @@ if (mode === 'centralized') {
 
 } else if (mode === 'domain-lead') {
   // Lead 交叉评审 + Critic × 2
-  const [leadCross, critic] = (await parallel([
+  // 注意：parallel() 结果按位置对应 thunk，失败位为 null——直接位置取值，
+  // 不要先 filter(Boolean) 再解构（元素前移会把 Critic 错认成交叉评论）
+  const r2Raw = await parallel([
     () => agent(prompts.lead_cross + factsBlock, { label: 'Lead交叉', phase: 'Round 2', agentType: 'Explore', schema: CROSS_SCHEMA }),
     () => agent(prompts.critic + factsBlock,     { label: 'Critic',    phase: 'Round 2', agentType: 'Explore', schema: CRITIC_SCHEMA }),
-  ])).filter(Boolean)
-  round2 = { critic, cross: leadCross ? [leadCross] : [] }
+  ])
+  round2 = { critic: r2Raw[1], cross: r2Raw[0] ? [r2Raw[0]] : [] }
 
 } else {  // peer
-  // 3 交叉评论者 + Critic × 4
-  const [pmCross, designerCross, engineerCross, critic] = (await parallel([
+  // 3 交叉评论者 + Critic × 4（同上：位置取值，不 filter 后解构）
+  const r2Raw = await parallel([
     () => agent(prompts.pm_cross + factsBlock,        { label: 'PM交叉',        phase: 'Round 2', agentType: 'Explore', schema: CROSS_SCHEMA }),
     () => agent(prompts.designer_cross + factsBlock,  { label: 'Designer交叉',  phase: 'Round 2', agentType: 'Explore', schema: CROSS_SCHEMA }),
     () => agent(prompts.engineer_cross + factsBlock,  { label: 'Engineer交叉',  phase: 'Round 2', agentType: 'Explore', schema: CROSS_SCHEMA }),
     () => agent(prompts.critic + factsBlock,          { label: 'Critic',        phase: 'Round 2', agentType: 'Explore', schema: CRITIC_SCHEMA }),
-  ])).filter(Boolean)
-  round2 = { critic, cross: [pmCross, designerCross, engineerCross].filter(Boolean) }
+  ])
+  round2 = { critic: r2Raw[3], cross: r2Raw.slice(0, 3).filter(Boolean) }
 }
 
-return { mode, round1: facts, round2 }
+return { mode, round1: facts, missingRoles, round2 }
 ```
 
 ---
@@ -264,8 +276,8 @@ return { mode, round1: facts, round2 }
 2. **`meta` 必须是纯字面量** —— 不能用变量、函数调用、模板插值、展开运算符。
 3. **禁用 `Date.now()` / `Math.random()` / 无参 `new Date()`** —— 会抛异常（破坏可恢复性）。需要时间戳由主会话通过 args 传入；需要随机性则按 agent 索引变化 prompt/label。
 4. **无文件系统 / Node API** —— 不能 `Read()` / `fs` / `require`。读画布、读项目代码都由 `agentType: 'Explore'` 的子 agent 在自己的工具上下文里完成；写画布由主会话在 Round 3 完成。
-5. **`parallel()` 是 barrier** —— 任一 thunk 抛错返回 `null`，需 `.filter(Boolean)` 清理后再用。
-6. **`args` 运行时是 JSON 字符串（实测）** —— 本仓库 v1.4.0 端到端验证发现，Workflow 工具传入的 args 在脚本里 `typeof args === 'string'`（被序列化），**不是对象**。直接 `const {mode} = args` 会解构出 undefined 导致崩溃。必须 `JSON.parse(args)` 后再解构：`const { mode, prompts } = JSON.parse(args)`。若 prompts 体量较大，也可直接内联进脚本（实测内联稳定，绕开解析）。
+5. **`parallel()` 是 barrier，失败位返回 `null`** —— 结果数组与 thunk 按位置对应。**禁止 `filter(Boolean)` 后做位置解构**（元素前移会张冠李戴，如把 Critic 结果错认成交叉评论）。先按位置取值，再对同质列表 filter。任何角色失败都要记入 `missingRoles` 返回主会话，交付时向用户声明缺角，禁止静默降级。
+6. **`args` 的运行时类型不可依赖** —— 实测存在被序列化为 JSON 字符串的版本（`typeof args === 'string'`），也可能随 harness 升级变为对象。统一用防御性解析：`const input = typeof args === 'string' ? JSON.parse(args) : args`。若 prompts 体量较大，也可直接内联进脚本（实测内联稳定，绕开解析）。
 7. **`return` 的值就是主会话收到的结果** —— 无需 `log()` 输出给用户；`log()` 只用于进度播报。
 
 ---
